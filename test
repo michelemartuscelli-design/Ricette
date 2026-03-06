@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Login</title>
+<style>
+body { font-family: sans-serif; background: #1A1008; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+.box { width: 100%; max-width: 400px; }
+h1 { text-align: center; margin-bottom: 24px; }
+input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #555; background: #2C1F0E; color: white; font-size: 16px; box-sizing: border-box; }
+button { width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+.btn-main { background: #C8952A; color: #1A1008; }
+.btn-sec { background: transparent; color: #C8952A; border: 2px solid #C8952A; }
+#msg { text-align: center; padding: 10px; min-height: 24px; color: #E8B84B; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🍳 Cucina</h1>
+  <div id="msg"></div>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="pass" placeholder="Password">
+  <button class="btn-main" onclick="doLogin()">Accedi</button>
+  <button class="btn-sec" onclick="doRegister()">Registrati</button>
+</div>
+
+<script>
+const SUPA_URL = 'https://amvxjsiwcgszvjjkspnv.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtdnhqc2l3Y2dzenZqamtzcG52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDYwMDEsImV4cCI6MjA4NzcyMjAwMX0.PR0icBAibj2bm8nCYWLYJwZ4_WyRooekh_pUW9MTuzY';
+
+function msg(text) {
+  document.getElementById('msg').textContent = text;
+}
+
+async function doLogin() {
+  msg('Accesso in corso...');
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  if (!email || !pass) { msg('Inserisci email e password'); return; }
+  try {
+    const res = await fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.message || 'Errore');
+    msg('✅ Login riuscito! Token: ' + data.access_token.substring(0, 20) + '...');
+  } catch(e) {
+    msg('❌ Errore: ' + e.message);
+  }
+}
+
+async function doRegister() {
+  msg('Registrazione in corso...');
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  if (!email || !pass) { msg('Inserisci email e password'); return; }
+  try {
+    const res = await fetch(SUPA_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.message || 'Errore');
+    msg('✅ Registrazione OK! Controlla email oppure accedi direttamente.');
+  } catch(e) {
+    msg('❌ Errore: ' + e.message);
+  }
+}
+</script>
+
+</body>
+</html>
