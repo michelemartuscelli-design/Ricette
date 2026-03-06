@@ -11,7 +11,7 @@
 <title>Cucina</title>
 <link rel="manifest" id="manifest-link" href="#">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{height:100%;-webkit-text-size-adjust:100%;}
@@ -1097,12 +1097,24 @@ const mf={name:‘Cucina’,short_name:‘Cucina’,start_url:’./’,display:�
 document.getElementById(‘manifest-link’).href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:‘application/json’}));
 
 // ═══ INIT ═══
-window.addEventListener(‘DOMContentLoaded’,()=>{
+function initSplash(){
 setTimeout(()=>{
-document.getElementById(‘splash’).classList.add(‘out’);
-setTimeout(()=>{document.getElementById(‘splash’).remove();document.getElementById(‘auth-screen’).style.display=‘flex’;},500);
+const splash=document.getElementById(‘splash’);
+if(splash){
+splash.classList.add(‘out’);
+setTimeout(()=>{
+if(splash.parentNode)splash.parentNode.removeChild(splash);
+const auth=document.getElementById(‘auth-screen’);
+if(auth)auth.style.display=‘flex’;
+},500);
+}
 },1400);
-});
+}
+if(document.readyState===‘loading’){
+document.addEventListener(‘DOMContentLoaded’,initSplash);
+}else{
+initSplash();
+}
 document.getElementById(‘auth-pass’).addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)authSubmit();});
 </script>
 
