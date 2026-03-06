@@ -1097,25 +1097,14 @@ const mf={name:‘Cucina’,short_name:‘Cucina’,start_url:’./’,display:�
 document.getElementById(‘manifest-link’).href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:‘application/json’}));
 
 // ═══ INIT ═══
-function initSplash(){
-setTimeout(()=>{
-const splash=document.getElementById(‘splash’);
-if(splash){
-splash.classList.add(‘out’);
-setTimeout(()=>{
-if(splash.parentNode)splash.parentNode.removeChild(splash);
-const auth=document.getElementById(‘auth-screen’);
-if(auth)auth.style.display=‘flex’;
-},500);
+function showAuth(){
+var splash=document.getElementById(‘splash’);
+if(splash){splash.style.opacity=‘0’;splash.style.pointerEvents=‘none’;setTimeout(function(){splash.style.display=‘none’;},400);}
+var auth=document.getElementById(‘auth-screen’);
+if(auth){auth.style.display=‘flex’;}
 }
-},1400);
-}
-if(document.readyState===‘loading’){
-document.addEventListener(‘DOMContentLoaded’,initSplash);
-}else{
-initSplash();
-}
-document.getElementById(‘auth-pass’).addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)authSubmit();});
+setTimeout(showAuth,1500);
+try{document.getElementById(‘auth-pass’).addEventListener(‘keydown’,function(e){if(e.key===‘Enter’)authSubmit();});}catch(e){}
 </script>
 
 </body>
