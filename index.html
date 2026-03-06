@@ -285,8 +285,9 @@ select.form-ctrl option{background:var(–brown3);color:var(–label);}
     <input class="auth-input" id="auth-pass" type="password" placeholder="Password" autocomplete="current-password">
     <div class="auth-error" id="auth-error"></div>
     <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Accedi</button>
+    <button class="auth-btn" id="auth-register-btn" onclick="toggleAuthMode()" style="background:transparent;color:var(--gold2);border:1.5px solid var(--gold);margin-top:4px">Registrati</button>
   </div>
-  <div class="auth-switch" id="auth-switch">Non hai un account? <span onclick="toggleAuthMode()">Registrati</span></div>
+  <div class="auth-switch" id="auth-switch" style="display:none">Non hai un account? <span onclick="toggleAuthMode()">Registrati</span></div>
 </div>
 
 <button class="fab" id="fab" style="display:none">＋</button>
@@ -614,8 +615,15 @@ async function authSubmit(){
 }
 function toggleAuthMode(){
   authMode=authMode==='login'?'register':'login';
-  document.getElementById('auth-submit-btn').textContent=authMode==='login'?'Accedi':'Registrati';
-  document.getElementById('auth-switch').innerHTML=authMode==='login'?'Non hai un account? <span onclick="toggleAuthMode()">Registrati</span>':'Hai già un account? <span onclick="toggleAuthMode()">Accedi</span>';
+  var submitBtn=document.getElementById('auth-submit-btn');
+  var regBtn=document.getElementById('auth-register-btn');
+  if(authMode==='login'){
+    submitBtn.textContent='Accedi';
+    if(regBtn){regBtn.textContent='Non hai un account? Registrati';}
+  }else{
+    submitBtn.textContent='Crea account';
+    if(regBtn){regBtn.textContent='Hai già un account? Accedi';}
+  }
   document.getElementById('auth-error').textContent='';
 }
 function signOut(){
