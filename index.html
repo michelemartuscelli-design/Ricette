@@ -593,6 +593,8 @@ async function dbDelete(table,id){
 
 // ═══ AUTH ═══
 async function authSubmit(){
+  // Debug visibile
+  document.getElementById('auth-error').textContent = 'Connessione in corso...';
   const email=document.getElementById('auth-email').value.trim();
   const pass=document.getElementById('auth-pass').value;
   const errEl=document.getElementById('auth-error');
