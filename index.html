@@ -276,18 +276,23 @@ select.form-ctrl option{background:var(–brown3);color:var(–label);}
 
 <!-- AUTH -->
 
-<div id="auth-screen" style="display:flex">
-  <div class="auth-logo">🍳</div>
-  <div class="auth-title">Cucina</div>
-  <div class="auth-sub">Il tuo ricettario personale</div>
-  <div class="auth-form">
-    <input class="auth-input" id="auth-email" type="email" placeholder="Email" autocomplete="email">
-    <input class="auth-input" id="auth-pass" type="password" placeholder="Password" autocomplete="current-password">
-    <div class="auth-error" id="auth-error"></div>
-    <button class="auth-btn" id="auth-submit-btn" onclick="authSubmit()">Accedi</button>
-    <button class="auth-btn" id="auth-register-btn" onclick="toggleAuthMode()" style="background:transparent;color:var(--gold2);border:1.5px solid var(--gold);margin-top:4px">Registrati</button>
-  </div>
-  <div class="auth-switch" id="auth-switch" style="display:none">Non hai un account? <span onclick="toggleAuthMode()">Registrati</span></div>
+<div id="auth-screen" style="display:flex;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#1A1008;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;">
+  <div style="font-size:64px;margin-bottom:16px">🍳</div>
+  <div style="font-family:serif;font-size:32px;font-weight:800;color:#F5EDD8;margin-bottom:4px">Cucina</div>
+  <div style="font-size:14px;color:rgba(245,237,216,0.45);margin-bottom:32px">Il tuo ricettario personale</div>
+  <div id="auth-msg" style="color:#E8B84B;font-size:14px;min-height:20px;margin-bottom:8px;text-align:center"></div>
+  <input type="email" id="auth-email" placeholder="Email" autocomplete="email"
+    style="width:100%;max-width:360px;padding:14px 16px;margin-bottom:12px;border-radius:10px;border:1.5px solid rgba(245,237,216,0.15);background:#2C1F0E;color:#F5EDD8;font-size:16px;box-sizing:border-box;outline:none;">
+  <input type="password" id="auth-pass" placeholder="Password" autocomplete="current-password"
+    style="width:100%;max-width:360px;padding:14px 16px;margin-bottom:16px;border-radius:10px;border:1.5px solid rgba(245,237,216,0.15);background:#2C1F0E;color:#F5EDD8;font-size:16px;box-sizing:border-box;outline:none;">
+  <button id="auth-submit-btn" onclick="authSubmit()"
+    style="width:100%;max-width:360px;padding:15px;border-radius:10px;border:none;background:linear-gradient(135deg,#C8952A,#E8B84B);color:#1A1008;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px;">
+    Accedi
+  </button>
+  <button id="auth-toggle-btn" onclick="toggleAuthMode()"
+    style="width:100%;max-width:360px;padding:15px;border-radius:10px;border:2px solid #C8952A;background:transparent;color:#E8B84B;font-size:16px;font-weight:600;cursor:pointer;">
+    Non hai un account? Registrati
+  </button>
 </div>
 
 <button class="fab" id="fab" style="display:none">＋</button>
@@ -594,10 +599,10 @@ async function dbDelete(table,id){
 // ═══ AUTH ═══
 async function authSubmit(){
   // Debug visibile
-  document.getElementById('auth-error').textContent = 'Connessione in corso...';
+  var msgEl=document.getElementById('auth-msg');if(msgEl)msgEl.textContent='Connessione in corso...';
   const email=document.getElementById('auth-email').value.trim();
   const pass=document.getElementById('auth-pass').value;
-  const errEl=document.getElementById('auth-error');
+  const errEl=document.getElementById('auth-msg')||{textContent:''};
   errEl.textContent='';
   if(!email||!pass){errEl.textContent='Inserisci email e password';return;}
   const btn=document.getElementById('auth-submit-btn');
@@ -618,15 +623,16 @@ async function authSubmit(){
 function toggleAuthMode(){
   authMode=authMode==='login'?'register':'login';
   var submitBtn=document.getElementById('auth-submit-btn');
-  var regBtn=document.getElementById('auth-register-btn');
+  var toggleBtn=document.getElementById('auth-toggle-btn');
   if(authMode==='login'){
     submitBtn.textContent='Accedi';
-    if(regBtn){regBtn.textContent='Non hai un account? Registrati';}
+    if(toggleBtn)toggleBtn.textContent='Non hai un account? Registrati';
   }else{
     submitBtn.textContent='Crea account';
-    if(regBtn){regBtn.textContent='Hai già un account? Accedi';}
+    if(toggleBtn)toggleBtn.textContent='Hai già un account? Accedi';
   }
-  document.getElementById('auth-error').textContent='';
+  var msg=document.getElementById('auth-msg');
+  if(msg)msg.textContent='';
 }
 function signOut(){
   authToken=null;currentUser=null;recipes=[];knowledge=[];
