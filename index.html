@@ -196,14 +196,7 @@ select.form-ctrl option{background:var(–brown3);color:var(–label);}
 .empty-title{font-family:‘Fraunces’,serif;font-size:22px;font-weight:600;color:var(–label);}
 .empty-body{font-size:14px;color:var(–label3);line-height:1.5;max-width:240px;}
 
-/* SPLASH */
-#splash{position:fixed;inset:0;z-index:3000;background:var(–brown);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .6s ease;}
-#splash.out{opacity:0;pointer-events:none;}
-.splash-icon{width:100px;height:100px;border-radius:26px;background:linear-gradient(145deg,var(–gold),var(–gold2));display:flex;align-items:center;justify-content:center;font-size:52px;box-shadow:0 8px 32px rgba(200,149,42,.4);animation:sBounce .8s var(–spring) .2s both;}
-@keyframes sBounce{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
-.splash-name{font-family:‘Fraunces’,serif;font-size:32px;font-weight:800;letter-spacing:-1px;color:var(–cream);animation:sFadeUp .5s ease .6s both;}
-.splash-sub{font-size:14px;color:var(–label3);animation:sFadeUp .5s ease .75s both;}
-@keyframes sFadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* SPLASH REMOVED */
 
 /* AUTH */
 #auth-screen{position:fixed;inset:0;z-index:2000;background:var(–brown);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;max-width:430px;margin:0 auto;}
@@ -277,19 +270,13 @@ select.form-ctrl option{background:var(–brown3);color:var(–label);}
 </head>
 <body>
 
-<div id="splash">
-  <div class="splash-icon">🍳</div>
-  <div class="splash-name">Cucina</div>
-  <div class="splash-sub">Il tuo ricettario personale</div>
-</div>
-
 <canvas id="confetti-canvas"></canvas>
 
 <div id="toast"></div>
 
 <!-- AUTH -->
 
-<div id="auth-screen" style="display:none">
+<div id="auth-screen" style="display:flex">
   <div class="auth-logo">🍳</div>
   <div class="auth-title">Cucina</div>
   <div class="auth-sub">Il tuo ricettario personale</div>
@@ -1097,13 +1084,6 @@ const mf={name:‘Cucina’,short_name:‘Cucina’,start_url:’./’,display:�
 document.getElementById(‘manifest-link’).href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:‘application/json’}));
 
 // ═══ INIT ═══
-function showAuth(){
-var splash=document.getElementById(‘splash’);
-if(splash){splash.style.opacity=‘0’;splash.style.pointerEvents=‘none’;setTimeout(function(){splash.style.display=‘none’;},400);}
-var auth=document.getElementById(‘auth-screen’);
-if(auth){auth.style.display=‘flex’;}
-}
-setTimeout(showAuth,1500);
 try{document.getElementById(‘auth-pass’).addEventListener(‘keydown’,function(e){if(e.key===‘Enter’)authSubmit();});}catch(e){}
 </script>
 
