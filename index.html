@@ -1120,6 +1120,23 @@ document.getElementById(‘manifest-link’).href=URL.createObjectURL(new Blob([
 // ═══ INIT ═══
 try{document.getElementById(‘auth-pass’).addEventListener(‘keydown’,function(e){if(e.key===‘Enter’)authSubmit();});}catch(e){}
 </script>
+<script>
+let isLogin = true;
 
+function toggleAuthMode() {
+  const msg = document.getElementById("auth-msg");
+  const btn = document.getElementById("auth-toggle-btn");
+
+  if (isLogin) {
+    msg.textContent = "Crea un account";
+    btn.textContent = "Hai già un account? Accedi";
+  } else {
+    msg.textContent = "Accedi al tuo account";
+    btn.textContent = "Non hai un account? Registrati";
+  }
+
+  isLogin = !isLogin;
+}
+</script>
 </body>
 </html>
