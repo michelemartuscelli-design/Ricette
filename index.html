@@ -885,17 +885,35 @@ document.getElementById(‘ricette-subtitle’).textContent=recipes.length+’ r
 
 // filtri
 const cats=[‘Tutti’,…new Set(recipes.map(r=>r.categoria).filter(Boolean))];
-document.getElementById(‘filter-cat’).innerHTML=cats.map(c=>`<button class="filter-pill${c===curCatFilter?' active':''}" onclick="selCatFilter('${c}')">${c==='Tutti'?'Tutti 🍽️':(catEmoji[c]||'')+ ' '+c}</button>`).join(’’);
+document.getElementById(‘filter-cat’).innerHTML=cats.map(function(c){var a=c===curCatFilter?’ active’:’’;var lbl=c===‘Tutti’?‘Tutti 🍽️’:(catEmoji[c]||’’)+’ ‘+c;return’<button class=“filter-pill’+a+’” onclick=“selCatFilter("’+c+’")”>’ +lbl+’</button>’;}).join(’’);
 
 const list=document.getElementById(‘ricette-list’);
 let filtered=curCatFilter===‘Tutti’?recipes:recipes.filter(r=>r.categoria===curCatFilter);
 if(!filtered.length){
 list.innerHTML=`<div class="empty"><div class="empty-icon">🍝</div><div class="empty-title">Nessuna ricetta</div><div class="empty-body">Aggiungi la tua prima ricetta o generala con AI</div></div>`;return;
 }
-list.innerHTML=filtered.map(r=>{
-const totalTime=(r.tempo_prep||0)+(r.tempo_cott||0);
-const ing=Array.isArray(r.ingredienti)?r.ingredienti:[];
-return`<div class="recipe-card" onclick="showRicettaDetail('${r.id}')"> <div class="recipe-card-img" style="height:${r.foto?'180px':'120px'}"> ${r.foto?`<img src="${r.foto}" alt="${r.nome}" loading="lazy">`:`<div class="recipe-card-img-placeholder">${catEmoji[r.categoria]||‘🍽️’}</div>`} </div> <div class="recipe-card-body"> <div class="recipe-card-top"> <div class="recipe-name">${r.nome||'Ricetta'}${r.preferita?' ⭐':''}</div> ${r.categoria?`<span class="recipe-cat-pill">${r.categoria}</span>`:''} </div> <div class="recipe-meta"> ${totalTime?`<span class="meta-chip">⏱ ${totalTime} min</span>`:''} ${r.difficolta?`<span class="meta-chip">${diffEmoji[r.difficolta]||’’} ${r.difficolta}</span>`:''} ${r.cucina?`<span class="meta-chip">🌍 ${r.cucina}</span>`:''} ${ing.length?`<span class="meta-chip">🧅 ${ing.length} ingr.</span>`:''} </div> ${r.descrizione?`<div class="recipe-desc">${r.descrizione}</div>`:''} <div class="recipe-actions"> <button class="icon-btn" onclick="event.stopPropagation();openRicettaSheet('${r.id}')">✏️</button> <button class="icon-btn" onclick="event.stopPropagation();delRicetta('${r.id}')">🗑️</button> </div> </div> </div>`;
+list.innerHTML=filtered.map(function(r){
+var totalTime=(r.tempo_prep||0)+(r.tempo_cott||0);
+var ing=Array.isArray(r.ingredienti)?r.ingredienti:[];
+var imgHTML=r.foto?’<img src="'+r.foto+'" alt="'+r.nome+'" loading="lazy">’:’ <div class="recipe-card-img-placeholder">’+( catEmoji[r.categoria]||‘🍽️’)+’</div>’;
+var catPill=r.categoria?’<span class="recipe-cat-pill">’+r.categoria+’</span>’:’’;
+var timeChip=totalTime?’<span class="meta-chip">⏱ ‘+totalTime+’ min</span>’:’’;
+var diffChip=r.difficolta?’<span class="meta-chip">’+( diffEmoji[r.difficolta]||’’)+’ ‘+r.difficolta+’</span>’:’’;
+var cucinaChip=r.cucina?’<span class="meta-chip">🌍 ‘+r.cucina+’</span>’:’’;
+var ingChip=ing.length?’<span class="meta-chip">🧅 ‘+ing.length+’ ingr.</span>’:’’;
+var descHTML=r.descrizione?’<div class="recipe-desc">’+r.descrizione+’</div>’:’’;
+var favStar=r.preferita?’ ⭐’:’’;
+var imgH=r.foto?‘180px’:‘120px’;
+return ‘<div class="recipe-card" onclick="showRicettaDetail(\''+r.id+'\')">’
++’<div class="recipe-card-img" style="height:'+imgH+'">’+imgHTML+’</div>’
++’<div class="recipe-card-body">’
++’<div class="recipe-card-top"><div class="recipe-name">’+( r.nome||‘Ricetta’)+favStar+’</div>’+catPill+’</div>’
++’<div class="recipe-meta">’+timeChip+diffChip+cucinaChip+ingChip+’</div>’
++descHTML
++’<div class="recipe-actions">’
++’<button class="icon-btn" onclick="event.stopPropagation();openRicettaSheet(\''+r.id+'\')">✏️</button>’
++’<button class="icon-btn" onclick="event.stopPropagation();delRicetta(\''+r.id+'\')">🗑️</button>’
++’</div></div></div>’;
 }).join(’’);
 }
 function selCatFilter(c){curCatFilter=c;renderRicette();}
@@ -1012,7 +1030,7 @@ async function delRicetta(id){if(!confirm(‘Eliminare questa ricetta?’))retur
 // ═══ KNOWLEDGE ═══
 function renderKnowledge(){
 const topics=[‘Tutti’,…new Set(knowledge.map(k=>k.topic).filter(Boolean))];
-document.getElementById(‘filter-ktopic’).innerHTML=topics.map(t=>`<button class="filter-pill${t===curKTopicFilter?' active':''}" onclick="selKTopicFilter('${t}')">${t}</button>`).join(’’);
+document.getElementById(‘filter-ktopic’).innerHTML=topics.map(function(t){var a=t===curKTopicFilter?’ active’:’’;return’<button class=“filter-pill’+a+’” onclick=“selKTopicFilter("’+t+’")”>’ +t+’</button>’;}).join(’’);
 const list=document.getElementById(‘knowledge-list’);
 let filtered=curKTopicFilter===‘Tutti’?knowledge:knowledge.filter(k=>k.topic===curKTopicFilter);
 if(!filtered.length){list.innerHTML=`<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">Nessuna risorsa</div><div class="empty-body">Salva articoli, video e tecniche utili</div></div>`;return;}
@@ -1057,15 +1075,15 @@ function closeSearch(){document.getElementById(‘search-overlay’).classList.r
 document.getElementById(‘search-input’).addEventListener(‘input’,function(){
 const q=this.value.trim().toLowerCase();
 if(!q){document.getElementById(‘search-results’).innerHTML=’<div class="search-empty">Inizia a digitare per cercare</div>’;return;}
-const hl=txt=>txt.replace(new RegExp(q,‘gi’),m=>`<span class="search-highlight">${m}</span>`);
+var hl=function(txt){return txt.replace(new RegExp(q,‘gi’),function(m){return’<span class="search-highlight">’+m+’</span>’;});};
 let html=’’;
 const rR=recipes.filter(r=>(r.nome+r.descrizione+(r.tags||’’)+r.categoria+(r.cucina||’’)).toLowerCase().includes(q));
-if(rR.length){html+=`<div class="search-section-header">🍳 Ricette</div>`;html+=rR.slice(0,6).map(r=>`<div class="search-item" onclick="closeSearch();showRicettaDetail('${r.id}')"><div class="search-item-icon">${catEmoji[r.categoria]||'🍽️'}</div><div><div class="search-item-title">${hl(r.nome||'Ricetta')}</div><div class="search-item-sub">${r.categoria||''} ${r.cucina?'· '+r.cucina:''}</div></div></div>`).join(’’);}
+if(rR.length){html+=’<div class="search-section-header">🍳 Ricette</div>’;html+=rR.slice(0,6).map(function(r){return’<div class=“search-item” onclick=“closeSearch();showRicettaDetail("’+r.id+’")”>’+’<div class="search-item-icon">’+(catEmoji[r.categoria]||‘🍽️’)+’</div>’+’<div><div class="search-item-title">’+hl(r.nome||‘Ricetta’)+’</div><div class="search-item-sub">’+(r.categoria||’’)+’ ‘+(r.cucina?’· ‘+r.cucina:’’)+’</div></div></div>’;}).join(’’);}
 const ingR=recipes.filter(r=>Array.isArray(r.ingredienti)&&r.ingredienti.some(i=>i.nome.toLowerCase().includes(q)));
 const ingFiltered=ingR.filter(r=>!rR.find(x=>x.id===r.id));
-if(ingFiltered.length){html+=`<div class="search-section-header">🧅 Per ingrediente</div>`;html+=ingFiltered.slice(0,4).map(r=>`<div class="search-item" onclick="closeSearch();showRicettaDetail('${r.id}')"><div class="search-item-icon">${catEmoji[r.categoria]||'🍽️'}</div><div><div class="search-item-title">${r.nome}</div><div class="search-item-sub">Contiene: ${r.ingredienti.find(i=>i.nome.toLowerCase().includes(q))?.nome}</div></div></div>`).join(’’);}
+if(ingFiltered.length){html+=’<div class="search-section-header">🧅 Per ingrediente</div>’;html+=ingFiltered.slice(0,4).map(function(r){var found=r.ingredienti.find(function(i){return i.nome.toLowerCase().includes(q);});return’<div class=“search-item” onclick=“closeSearch();showRicettaDetail("’+r.id+’")”>’+’<div class="search-item-icon">’+(catEmoji[r.categoria]||‘🍽️’)+’</div>’+’<div><div class="search-item-title">’+r.nome+’</div><div class="search-item-sub">Contiene: ‘+(found?found.nome:’’)+’</div></div></div>’;}).join(’’);}
 const kR=knowledge.filter(k=>(k.tit+(k.note||’’)+(k.topic||’’)).toLowerCase().includes(q));
-if(kR.length){html+=`<div class="search-section-header">📚 Knowledge</div>`;html+=kR.slice(0,4).map(k=>`<div class="search-item" onclick="closeSearch();showKnowDetail('${k.id}')"><div class="search-item-icon">${kTypeEmoji[k.tipo]||'📌'}</div><div><div class="search-item-title">${hl(k.tit||'Risorsa')}</div><div class="search-item-sub">${k.topic||''}</div></div></div>`).join(’’);}
+if(kR.length){html+=’<div class="search-section-header">📚 Knowledge</div>’;html+=kR.slice(0,4).map(function(k){return’<div class=“search-item” onclick=“closeSearch();showKnowDetail("’+k.id+’")”>’+’<div class="search-item-icon">’+(kTypeEmoji[k.tipo]||‘📌’)+’</div>’+’<div><div class="search-item-title">’+hl(k.tit||‘Risorsa’)+’</div><div class="search-item-sub">’+(k.topic||’’)+’</div></div></div>’;}).join(’’);}
 if(!html)html=`<div class="search-empty">Nessun risultato per "<strong>${q}</strong>"</div>`;
 document.getElementById(‘search-results’).innerHTML=html;
 });
